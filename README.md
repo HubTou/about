@@ -1,3 +1,6 @@
+# Installation
+pip install [pnu-about](https://pypi.org/project/pnu-about/)
+
 # ABOUT(1)
 
 ## NAME
