@@ -26,16 +26,16 @@ The **about** utility shows most of the system information available through the
 
 Options | Use
 ------- | ---
--a\|--all|Same as -SHOEP.
--S\|--sys\|--system|Show information about the system.
--H\|--hw\|--hardware|Show information about the hardware.
--O\|--os\|--operating|Show information about the Operating System.
--E\|--env\|--environment|Show information about the environment.
--P\|--py\|--python|Show information about Python.
--d\|--debug|Enable debug level messages.
--h\|--help\|-?|Print usage and a short help message and exit.
--v\|--version|Print version and exit.
---|Options processing terminator.
+-a\|--all|Same as -SHOEP
+-S\|--sys\|--system|Show information about the system
+-H\|--hw\|--hardware|Show information about the hardware
+-O\|--os\|--operating|Show information about the Operating System
+-E\|--env\|--environment|Show information about the environment
+-P\|--py\|--python|Show information about Python
+-d\|--debug|Enable debug level messages
+-h\|--help\|-?|Print usage and a short help message and exit
+-v\|--version|Print version and exit
+--|Options processing terminator
 
 ## EXIT STATUS
 The about utility exits 0 on success, and >0 if an error occurs.
@@ -49,7 +49,6 @@ https://docs.python.org/3/library/index.html
 The about command is not a standard [UNIX](https://en.wikipedia.org/wiki/Unix)/[POSIX](https://en.wikipedia.org/wiki/POSIX) command.
 
 It tries to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide for [Python](https://www.python.org/) code.
-We check this with the [Pylint](https://www.pylint.org/) command.
 
 ## PORTABILITY
 Tested OK under Windows.
@@ -60,6 +59,6 @@ The about command was created as an example for the [PNU / PyNIX project](https:
 ## LICENSE
 This utility is available under the [3-clause BSD license](https://opensource.org/licenses/BSD-3-Clause).
 
-## AUTHOR
+## AUTHORS
 [Hubert Tournier](https://github.com/HubTou)
 
