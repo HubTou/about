@@ -1,5 +1,7 @@
 NAME=about
-SOURCES=src/${NAME}/__init__.py src/${NAME}/main.py
+VERSION=1.0.1
+SOURCES=main.py
+DESTROOTDIR=/usr/local
 
 # Default action is to show this help message:
 .help:
@@ -11,10 +13,12 @@ SOURCES=src/${NAME}/__init__.py src/${NAME}/main.py
 	@echo "  check-sloc     Count Single Lines of Code"
 	@echo "  checks         Make all the previous tests"
 	@echo "  format         Format code"
-	@echo "  package        Build package"
-	@echo "  upload-test    Upload the package to TestPyPi"
-	@echo "  upload         Upload the package to PyPi"
-	@echo "  distclean      Remove all generated files"
+	@echo "  all            Build everything"
+	@echo "  install        Install under ${DESTROOTDIR}"
+	@echo "  uninstall      Uninstall from ${DESTROOTDIR}"
+	@echo "  whatis         Rebuild the whatis(1) database"
+	@echo "  clean          Remove the compressed man page"
+	@echo "  distclean      Remove everything made"
 
 check-code: /usr/local/bin/pylint
 	-pylint ${SOURCES}
@@ -40,20 +44,27 @@ checks: check-code check-security check-unused check-version check-sloc
 format: /usr/local/bin/black
 	black ${SOURCES}
 
+${NAME}.1.gz: ../../man/${NAME}.1
+	@gzip -k9c ../../man/${NAME}.1 > ${NAME}.1.gz
+
+all: ${NAME}.1.gz
+
+install: ${NAME}.1.gz
+	install -m 0755 -o root -g wheel main.py ${DESTROOTDIR}/bin/${NAME}
+	install -m 0644 -o root -g wheel ${NAME}.1.gz ${DESTROOTDIR}/man/man1
+
+uninstall:
+	rm -f ${DESTROOTDIR}/bin/${NAME}
+	rm -f ${DESTROOTDIR}/man/man1/${NAME}.1.gz
+
+whatis:
+	makewhatis
+
 love:
 	@echo "Not war!"
 
-man/${NAME}.1.gz: man/${NAME}.1
-	@gzip -k9c man/${NAME}.1 > man/${NAME}.1.gz
+clean:
+	@rm -f ${NAME}.1.gz
 
-package: man/${NAME}.1.gz
-	python -m build
+distclean: clean
 
-upload-test:
-	python -m twine upload --repository testpypi dist/*
-
-upload:
-	python -m twine upload dist/*
-
-distclean:
-	rm -rf build dist man/${NAME}.1.gz src/*.egg-info

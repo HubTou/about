@@ -17,8 +17,7 @@ import sysconfig
 import unicodedata
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - show system information v1.0.0 (May 15, 2021) by Hubert Tournier $"
-PROGRAM = "about"
+ID = "@(#) $Id: about - show system information v1.0.1 (May 24, 2021) by Hubert Tournier $"
 
 # Optional dependency upon py-cpuinfo
 # Use "pip install py-cpuinfo" to install
@@ -128,7 +127,7 @@ def process_command_line():
             sys.exit(42)
 
         elif option == "--everything":
-            print("Mama mia!")
+            print("Mamma mia!")
             sys.exit(88)
 
         elif option in ("-d", "--debug"):
@@ -139,8 +138,13 @@ def process_command_line():
             sys.exit(0)
 
         elif option in ("-v", "--version"):
-            print(ID.replace("@(#) $Id: ", "").replace(" $", ""))
+            print(ID.replace("@(" + "#)" + " $" + "Id" + ": ", "").replace(" $", ""))
             sys.exit(0)
+
+    logging.debug("process_commandline(): parameters:")
+    logging.debug(parameters)
+    logging.debug("process_commandline(): remaining_arguments:")
+    logging.debug(remaining_arguments)
 
     return remaining_arguments
 
@@ -385,7 +389,8 @@ def about_python():
 ################################################################################
 def main():
     """Program's entry point"""
-    console_log_format = PROGRAM + ": %(levelname)s: %(message)s"
+    program_name = os.path.basename(sys.argv[0])
+    console_log_format = program_name + ": %(levelname)s: %(message)s"
     logging.basicConfig(format=console_log_format, level=logging.DEBUG)
     logging.disable(logging.INFO)
 
@@ -403,3 +408,7 @@ def main():
     about_python()
 
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
