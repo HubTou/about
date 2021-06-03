@@ -17,7 +17,7 @@ import sysconfig
 import unicodedata
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - show system information v1.0.1 (May 24, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: about - show system information v1.0.3 (June 3, 2021) by Hubert Tournier $"
 
 # Optional dependency upon py-cpuinfo
 # Use "pip install py-cpuinfo" to install
@@ -39,11 +39,7 @@ parameters = {
 def display_help():
     """Displays usage and help"""
     print()
-    print(
-        "usage: {} [-d|--debug] [-h|--help|-?] [-v|--version] [-a|--all]".format(
-            PROGRAM
-        )
-    )
+    print("usage: about [-d|--debug] [-h|--help|-?] [-v|--version] [-a|--all]")
     print("       [-S|--sys|--system] [-H|--hw|--hardware] [-O|--os|--operating]")
     print("       [-E|--env|--environment] [-P|--py|--python] [--]")
     print("  ----------------------   ---------------------------------------------")

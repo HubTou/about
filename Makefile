@@ -22,7 +22,7 @@ check-code: /usr/local/bin/pylint
 lint: check-code
 
 check-security: /usr/local/bin/bandit
-	bandit -r ${SOURCES}
+	-bandit -r ${SOURCES}
 
 audit: check-security
 
@@ -30,10 +30,10 @@ check-unused: /usr/local/bin/vulture
 	-vulture --sort-by-size ${SOURCES}
 
 check-version: /usr/local/bin/vermin
-	vermin ${SOURCES}
+	-vermin ${SOURCES}
 
 check-sloc: /usr/local/bin/pygount
-	pygount --format=summary .
+	-pygount --format=summary .
 
 checks: check-code check-security check-unused check-version check-sloc
 
