@@ -4,11 +4,12 @@ about \- show system information
 .SH SYNOPSIS
 .B about
 [\-a|\-\-all]
-[\-S|\-\-sys|\-\-system]
+[\-E|\-\-env|\-\-environment]
 [\-H|\-\-hw|\-\-hardware]
 [\-O|\-\-os|\-\-operating]
-[\-E|\-\-env|\-\-environment]
 [\-P|\-\-py|\-\-python]
+[\-S|\-\-sys|\-\-system]
+[\-U|\-\-user]
 [\-d|\-\-debug]
 [\-h|\-\-help|\-?]
 [\-v|\-\-version]
@@ -20,10 +21,10 @@ utility shows most of the system information available through the Python Standa
 .SH OPTIONS
 .TP
 .BR \-a|\-\-all
-Same as -SHOEP.
+Same as -SUHOEP.
 .TP
-.BR \-S|\-\-sys|\-\-system
-Show information about the system.
+.BR \-E|\-\-env|\-\-environment
+Show information about the environment.
 .TP
 .BR \-H|\-\-hw|\-\-hardware
 Show information about the hardware.
@@ -31,11 +32,14 @@ Show information about the hardware.
 .BR \-O|\-\-os|\-\-operating
 Show information about the Operating System.
 .TP
-.BR \-E|\-\-env|\-\-environment
-Show information about the environment.
-.TP
 .BR \-P|\-\-py|\-\-python
 Show information about Python.
+.TP
+.BR \-S|\-\-sys|\-\-system
+Show information about the system.
+.TP
+.BR \-U|\-\-user
+Show information about the user.
 .TP
 .BR \-d|\-\-debug
 Enable debug level messages.
@@ -62,7 +66,7 @@ We check this with the Pylint command (see https://www.pylint.org/).
 .SH PORTABILITY
 Tested OK under Windows.
 .SH HISTORY
-The about command was created as an example for the PNU / PyNIX project, testing many of the standard Python functions for getting system information.
+The about command was created as an example for the PNU project, testing many of the standard Python functions for getting system information.
 .SH LICENSE
 This utility is available under the 3-clause BSD license (see https://opensource.org/licenses/BSD-3-Clause).
 .SH AUTHOR

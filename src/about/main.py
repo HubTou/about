@@ -5,6 +5,7 @@ Author: Hubert Tournier
 """
 
 import getopt
+import getpass
 import locale
 import logging
 import os
@@ -12,12 +13,20 @@ import platform
 import re
 import shutil
 import socket
+import string
 import sys
 import sysconfig
 import unicodedata
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - show system information v1.0.3 (June 3, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: about - show system information v1.1.0 (July 3, 2021) by Hubert Tournier $"
+
+# Unix dependencies:
+try:
+    import pwd
+    import grp
+except ModuleNotFoundError:
+    pass
 
 # Optional dependency upon py-cpuinfo
 # Use "pip install py-cpuinfo" to install
@@ -28,11 +37,12 @@ except ModuleNotFoundError:
 
 # Default parameters. Can be superseded by command line options
 parameters = {
+    "Environment": False,
     "Hardware": False,
     "Operating System": False,
-    "System": False,
-    "Environment": False,
     "Python": False,
+    "System": False,
+    "User": False,
 }
 
 ################################################################################
@@ -40,15 +50,16 @@ def display_help():
     """Displays usage and help"""
     print()
     print("usage: about [-d|--debug] [-h|--help|-?] [-v|--version] [-a|--all]")
-    print("       [-S|--sys|--system] [-H|--hw|--hardware] [-O|--os|--operating]")
-    print("       [-E|--env|--environment] [-P|--py|--python] [--]")
+    print("       [-E|--env|--environment] [-H|--hw|--hardware] [-O|--os|--operating]")
+    print("       [-P|--py|--python] [-S|--sys|--system] [-U|--user] [--]")
     print("  ----------------------   ---------------------------------------------")
-    print("  -a|--all                 Same as -SHOEP")
-    print("  -S|--sys|--system        Show information about the system")
+    print("  -a|--all                 Same as -SUHOEP")
+    print("  -E|--env|--environment   Show information about the environment")
     print("  -H|--hw|--hardware       Show information about the hardware")
     print("  -O|--os|--operating      Show information about the Operating System")
-    print("  -E|--env|--environment   Show information about the environment")
     print("  -P|--py|--python         Show information about Python")
+    print("  -S|--sys|--system        Show information about the system")
+    print("  -U|--user                Show information about the user")
     print("  -d|--debug               Enable debug mode")
     print("  -h|--help|-?             Print usage and this help message and exit")
     print("  -v|--version             Print version and exit")
@@ -68,7 +79,7 @@ def process_command_line():
         # same for option strings followed by =
         options, remaining_arguments = getopt.getopt(
             sys.argv[1:],
-            "adhvHOSEP?",
+            "adhvHOSEPU?",
             [
                 "all",
                 "debug",
@@ -86,6 +97,7 @@ def process_command_line():
                 "sys",
                 "system",
                 "universe",
+                "user",
                 "version",
             ],
         )
@@ -97,11 +109,15 @@ def process_command_line():
     for option, _ in options:
 
         if option in ("-a", "--all"):
+            parameters["Environment"] = True
             parameters["Hardware"] = True
             parameters["Operating System"] = True
-            parameters["System"] = True
-            parameters["Environment"] = True
             parameters["Python"] = True
+            parameters["System"] = True
+            parameters["User"] = True
+
+        elif option in ("-E", "--env", "--environment"):
+            parameters["Environment"] = True
 
         elif option in ("-H", "--hw", "--hardware"):
             parameters["Hardware"] = True
@@ -109,14 +125,14 @@ def process_command_line():
         elif option in ("-O", "--os", "--operating"):
             parameters["Operating System"] = True
 
+        elif option in ("-P", "--py", "--python"):
+            parameters["Python"] = True
+
         elif option in ("-S", "--sys", "--system"):
             parameters["System"] = True
 
-        elif option in ("-E", "--env", "--environment"):
-            parameters["Environment"] = True
-
-        elif option in ("-P", "--py", "--python"):
-            parameters["Python"] = True
+        elif option in ("-U", "--user"):
+            parameters["User"] = True
 
         elif option in ("--life", "--universe"):
             print("42!")
@@ -223,6 +239,75 @@ def about_local_system():
 
 
 ################################################################################
+def about_user():
+    """Show information about the user"""
+    if parameters["User"]:
+        print("[User]")
+        user = getpass.getuser()
+        print("getpass.getuser()={}".format(user))
+        print("os.getlogin()={}".format(os.getlogin()))
+        if sys_type() == "Unix":
+            print('pwd.getpwnam("{}")={}'.format(user, pwd.getpwnam(user)))
+            print("os.getgroups()={}".format(os.getgroups()))
+            for group_id in os.getgroups():
+                print("grp.getgrgid({})={}".format(group_id, grp.getgrgid(group_id)))
+        elif sys_type() == "Windows":
+            if os.environ["USERNAME"]:
+                print('os.environ["USERNAME"]={}'.format(os.environ["USERNAME"]))
+            if os.environ["USERPROFILE"]:
+                print('os.environ["USERPROFILE"]={}'.format(os.environ["USERPROFILE"]))
+            if os.environ["USERDOMAIN"]:
+                print('os.environ["USERDOMAIN"]={}'.format(os.environ["USERDOMAIN"]))
+            if os.environ["USERDOMAIN_ROAMINGPROFILE"]:
+                print(
+                    'os.environ["USERDOMAIN_ROAMINGPROFILE"]={}'.format(
+                        os.environ["USERDOMAIN_ROAMINGPROFILE"]
+                    )
+                )
+            if os.environ["HOME"]:
+                print('os.environ["HOME"]={}'.format(os.environ["HOME"]))
+            if os.environ["HOMEDRIVE"]:
+                print('os.environ["HOMEDRIVE"]={}'.format(os.environ["HOMEDRIVE"]))
+            if os.environ["HOMEPATH"]:
+                print('os.environ["HOMEPATH"]={}'.format(os.environ["HOMEPATH"]))
+        print()
+
+        print("[User/Process]")
+        if sys_type() == "Unix":
+            print("os.getuid()={}".format(os.getuid()))
+            print("os.getgid()={}".format(os.getgid()))
+            print("os.geteuid()={}".format(os.geteuid()))
+            print("os.getegid()={}".format(os.getegid()))
+            print("os.getresuid()={}".format(os.getresuid()))
+            print("os.getresgid()={}".format(os.getresgid()))
+        print()
+
+        print("[Process]")
+        pid = os.getpid()
+        print("os.getpid()={}".format(pid))
+        print("os.getppid()={}".format(os.getppid()))
+        if sys_type() == "Unix":
+            print("os.getpgid({})={}".format(pid, os.getpgid(pid)))
+            print("os.getpgrp()={}".format(os.getpgrp()))
+            print(
+                "os.getpriority(os.PRIO_PROCESS, 0)={}".format(
+                    os.getpriority(os.PRIO_PROCESS, 0)
+                )
+            )
+            print(
+                "os.getpriority(os.PRIO_PGRP, 0)={}".format(
+                    os.getpriority(os.PRIO_PGRP, 0)
+                )
+            )
+            print(
+                "os.getpriority(os.PRIO_USER, 0)={}".format(
+                    os.getpriority(os.PRIO_USER, 0)
+                )
+            )
+        print()
+
+
+################################################################################
 def about_hardware():
     """Show information about the hardware"""
     if parameters["Hardware"]:
@@ -238,6 +323,37 @@ def about_hardware():
                 "/var/run/dmesg.boot scan",
                 grep("/var/run/dmesg.boot", "^(CPU: |FreeBSD/SMP: |real memory  =)"),
             )
+        elif sys_type() == "Windows":
+            if os.environ["NUMBER_OF_PROCESSORS"]:
+                print(
+                    'os.environ["NUMBER_OF_PROCESSORS"]={}'.format(
+                        os.environ["NUMBER_OF_PROCESSORS"]
+                    )
+                )
+            if os.environ["PROCESSOR_ARCHITECTURE"]:
+                print(
+                    'os.environ["PROCESSOR_ARCHITECTURE"]={}'.format(
+                        os.environ["PROCESSOR_ARCHITECTURE"]
+                    )
+                )
+            if os.environ["PROCESSOR_IDENTIFIER"]:
+                print(
+                    'os.environ["PROCESSOR_IDENTIFIER"]={}'.format(
+                        os.environ["PROCESSOR_IDENTIFIER"]
+                    )
+                )
+            if os.environ["PROCESSOR_LEVEL"]:
+                print(
+                    'os.environ["PROCESSOR_LEVEL"]={}'.format(
+                        os.environ["PROCESSOR_LEVEL"]
+                    )
+                )
+            if os.environ["PROCESSOR_REVISION"]:
+                print(
+                    'os.environ["PROCESSOR_REVISION"]={}'.format(
+                        os.environ["PROCESSOR_REVISION"]
+                    )
+                )
         print()
 
         print("[Hardware/cpuinfo optional module]")
@@ -247,6 +363,36 @@ def about_hardware():
         except NameError:
             print("# For more detailed (and portable) CPU information do:")
             print("# pip install py-cpuinfo ; cpuinfo")
+        print()
+
+        print("[Hardware/Disk usage]")
+        if sys_type() == "Unix":
+            if os.path.exists("/etc/fstab"):
+                with open("/etc/fstab", "r") as file:
+                    for line in file.readlines():
+                        line = line.strip()
+                        if not line.startswith("#"):
+                            fields = line.split()
+                            if fields[1] != "none":
+                                print(
+                                    "File system={}   Mount point={}".format(
+                                        fields[0], fields[1]
+                                    )
+                                )
+                                print(
+                                    '  shutil.disk_usage("{}")={}'.format(
+                                        fields[1], shutil.disk_usage(fields[1])
+                                    )
+                                )
+        elif sys_type() == "Windows":
+            for letter in string.ascii_uppercase:
+                drive = letter + ":\\"
+                if os.path.exists(drive):
+                    print(
+                        '  shutil.disk_usage("{}")={}'.format(
+                            drive, shutil.disk_usage(drive)
+                        )
+                    )
         print()
 
 
@@ -316,9 +462,89 @@ def about_environment():
 
         print("[Environment/Locale]")
         print("locale.getlocale()={}".format(locale.getlocale()))
-        print("locale.getdefaultlocale()={}".format(locale.getdefaultlocale()))
         printm("locale.localeconv()", locale.localeconv())
         print()
+
+        print("locale.getlocale(locale.LC_CTYPE)={}".format(locale.getlocale(locale.LC_CTYPE)))
+        try:
+            print("locale.getlocale(locale.CODESET)={}".format(locale.nl_langinfo(locale.CODESET)))
+        except:
+            pass
+        print("locale.getdefaultlocale()={}".format(locale.getdefaultlocale()))
+        print("locale.getpreferredencoding()={}".format(locale.getpreferredencoding()))
+        print("locale.getlocale(locale.LC_COLLATE)={}".format(locale.getlocale(locale.LC_COLLATE)))
+        try:
+            print("locale.getlocale(locale.CHAR_MAX)={}".format(locale.getlocale(locale.CHAR_MAX)))
+        except:
+            pass
+        print()
+
+        try:
+            print("locale.getlocale(locale.LC_TIME)={}".format(locale.getlocale(locale.LC_TIME)))
+            print("locale.getlocale(locale.D_T_FMT)={}".format(locale.nl_langinfo(locale.D_T_FMT)))
+            print("locale.getlocale(locale.D_FMT)={}".format(locale.nl_langinfo(locale.D_FMT)))
+            print("locale.getlocale(locale.T_FMT)={}".format(locale.nl_langinfo(locale.T_FMT)))
+            print("locale.getlocale(locale.T_FMT_AMPM)={}".format(locale.nl_langinfo(locale.T_FMT_AMPM)))
+            print("locale.getlocale(locale.DAY_1)={}".format(locale.nl_langinfo(locale.DAY_1)))
+            print("locale.getlocale(locale.DAY_2)={}".format(locale.nl_langinfo(locale.DAY_2)))
+            print("locale.getlocale(locale.DAY_3)={}".format(locale.nl_langinfo(locale.DAY_3)))
+            print("locale.getlocale(locale.DAY_4)={}".format(locale.nl_langinfo(locale.DAY_4)))
+            print("locale.getlocale(locale.DAY_5)={}".format(locale.nl_langinfo(locale.DAY_5)))
+            print("locale.getlocale(locale.DAY_6)={}".format(locale.nl_langinfo(locale.DAY_6)))
+            print("locale.getlocale(locale.DAY_7)={}".format(locale.nl_langinfo(locale.DAY_7)))
+            print("locale.getlocale(locale.ABDAY_1)={}".format(locale.nl_langinfo(locale.ABDAY_1)))
+            print("locale.getlocale(locale.ABDAY_2)={}".format(locale.nl_langinfo(locale.ABDAY_2)))
+            print("locale.getlocale(locale.ABDAY_3)={}".format(locale.nl_langinfo(locale.ABDAY_3)))
+            print("locale.getlocale(locale.ABDAY_4)={}".format(locale.nl_langinfo(locale.ABDAY_4)))
+            print("locale.getlocale(locale.ABDAY_5)={}".format(locale.nl_langinfo(locale.ABDAY_5)))
+            print("locale.getlocale(locale.ABDAY_6)={}".format(locale.nl_langinfo(locale.ABDAY_6)))
+            print("locale.getlocale(locale.ABDAY_7)={}".format(locale.nl_langinfo(locale.ABDAY_7)))
+            print("locale.getlocale(locale.MON_1)={}".format(locale.nl_langinfo(locale.MON_1)))
+            print("locale.getlocale(locale.MON_2)={}".format(locale.nl_langinfo(locale.MON_2)))
+            print("locale.getlocale(locale.MON_3)={}".format(locale.nl_langinfo(locale.MON_3)))
+            print("locale.getlocale(locale.MON_4)={}".format(locale.nl_langinfo(locale.MON_4)))
+            print("locale.getlocale(locale.MON_5)={}".format(locale.nl_langinfo(locale.MON_5)))
+            print("locale.getlocale(locale.MON_6)={}".format(locale.nl_langinfo(locale.MON_6)))
+            print("locale.getlocale(locale.MON_7)={}".format(locale.nl_langinfo(locale.MON_7)))
+            print("locale.getlocale(locale.MON_8)={}".format(locale.nl_langinfo(locale.MON_8)))
+            print("locale.getlocale(locale.MON_9)={}".format(locale.nl_langinfo(locale.MON_9)))
+            print("locale.getlocale(locale.MON_10)={}".format(locale.nl_langinfo(locale.MON_10)))
+            print("locale.getlocale(locale.MON_11)={}".format(locale.nl_langinfo(locale.MON_11)))
+            print("locale.getlocale(locale.MON_12)={}".format(locale.nl_langinfo(locale.MON_12)))
+            print("locale.getlocale(locale.ABMON_1)={}".format(locale.nl_langinfo(locale.ABMON_1)))
+            print("locale.getlocale(locale.ABMON_2)={}".format(locale.nl_langinfo(locale.ABMON_2)))
+            print("locale.getlocale(locale.ABMON_3)={}".format(locale.nl_langinfo(locale.ABMON_3)))
+            print("locale.getlocale(locale.ABMON_4)={}".format(locale.nl_langinfo(locale.ABMON_4)))
+            print("locale.getlocale(locale.ABMON_5)={}".format(locale.nl_langinfo(locale.ABMON_5)))
+            print("locale.getlocale(locale.ABMON_6)={}".format(locale.nl_langinfo(locale.ABMON_6)))
+            print("locale.getlocale(locale.ABMON_7)={}".format(locale.nl_langinfo(locale.ABMON_7)))
+            print("locale.getlocale(locale.ABMON_8)={}".format(locale.nl_langinfo(locale.ABMON_8)))
+            print("locale.getlocale(locale.ABMON_9)={}".format(locale.nl_langinfo(locale.ABMON_9)))
+            print("locale.getlocale(locale.ABMON_10)={}".format(locale.nl_langinfo(locale.ABMON_10)))
+            print("locale.getlocale(locale.ABMON_11)={}".format(locale.nl_langinfo(locale.ABMON_11)))
+            print("locale.getlocale(locale.ABMON_12)={}".format(locale.nl_langinfo(locale.ABMON_12)))
+            print("locale.getlocale(locale.ERA)={}".format(locale.nl_langinfo(locale.ERA)))
+            print("locale.getlocale(locale.ERA_D_T_FMT)={}".format(locale.nl_langinfo(locale.ERA_D_T_FMT)))
+            print("locale.getlocale(locale.ERA_D_FMT)={}".format(locale.nl_langinfo(locale.ERA_D_FMT)))
+            print("locale.getlocale(locale.ERA_T_FMT)={}".format(locale.nl_langinfo(locale.ERA_T_FMT)))
+            print()
+    
+            print("locale.getlocale(locale.LC_MESSAGES)={}".format(locale.getlocale(locale.LC_MESSAGES)))
+            print("locale.getlocale(locale.YESEXPR)={}".format(locale.nl_langinfo(locale.YESEXPR)))
+            print("locale.getlocale(locale.NOEXPR)={}".format(locale.nl_langinfo(locale.NOEXPR)))
+            print()
+    
+            print("locale.getlocale(locale.LC_MONETARY)={}".format(locale.getlocale(locale.LC_MONETARY)))
+            print("locale.getlocale(locale.CRNCYSTR)={}".format(locale.nl_langinfo(locale.CRNCYSTR)))
+            print()
+    
+            print("locale.getlocale(locale.LC_NUMERIC)={}".format(locale.getlocale(locale.LC_NUMERIC)))
+            print("locale.getlocale(locale.RADIXCHAR)={}".format(locale.nl_langinfo(locale.RADIXCHAR)))
+            print("locale.getlocale(locale.THOUSEP)={}".format(locale.nl_langinfo(locale.THOUSEP)))
+            print("locale.getlocale(locale.ALT_DIGITS)={}".format(locale.nl_langinfo(locale.ALT_DIGITS)))
+            print()
+        except:
+            pass
 
 
 ################################################################################
@@ -398,6 +624,7 @@ def main():
         sys.exit(0)
 
     about_local_system()
+    about_user()
     about_hardware()
     about_operating_system()
     about_environment()
