@@ -1,73 +1,81 @@
-.TH ABOUT 1
-.SH NAME
-about \- show system information
-.SH SYNOPSIS
-.B about
-[\-a|\-\-all]
-[\-E|\-\-env|\-\-environment]
-[\-H|\-\-hw|\-\-hardware]
-[\-O|\-\-os|\-\-operating]
-[\-P|\-\-py|\-\-python]
-[\-S|\-\-sys|\-\-system]
-[\-U|\-\-user]
-[\-d|\-\-debug]
-[\-h|\-\-help|\-?]
-[\-v|\-\-version]
-[\-\-]
-.SH DESCRIPTION
+.Dd September 25, 2021
+.Dt ABOUT 1
+.Os
+.Sh NAME
+.Nm about
+.Nd show system information
+.Sh SYNOPSIS
+.Nm
+.Op Fl a|--all
+.Op Fl E|--env|--environment
+.Op Fl H|--hw|--hardware
+.Op Fl O|--os|--operating
+.Op Fl P|--py|--python
+.Op Fl S|--sys|--system
+.Op Fl U|--user
+.Op Fl -debug
+.Op Fl -help|-?
+.Op Fl -version
+.Op Fl -
+.Sh DESCRIPTION
 The
-.B about
+.Nm
 utility shows most of the system information available through the Python Standard Library.
-.SH OPTIONS
-.TP
-.BR \-a|\-\-all
+.Ss OPTIONS
+.Op Fl a|--all
 Same as -SUHOEP.
-.TP
-.BR \-E|\-\-env|\-\-environment
+.Pp
+.Op Fl E|--env|--environment
 Show information about the environment.
-.TP
-.BR \-H|\-\-hw|\-\-hardware
+.Pp
+.Op Fl H|--hw|--hardware
 Show information about the hardware.
-.TP
-.BR \-O|\-\-os|\-\-operating
+.Pp
+.Op Fl O|--os|--operating
 Show information about the Operating System.
-.TP
-.BR \-P|\-\-py|\-\-python
+.Pp
+.Op Fl P|--py|--python
 Show information about Python.
-.TP
-.BR \-S|\-\-sys|\-\-system
+.Pp
+.Op Fl S|--sys|--system
 Show information about the system.
-.TP
-.BR \-U|\-\-user
+.Pp
+.Op Fl U|--user
 Show information about the user.
-.TP
-.BR \-d|\-\-debug
-Enable debug level messages.
-.TP
-.BR \-h|\-\-help|\-?
-Print usage and a short help message and exit.
-.TP
-.BR \-v|\-\-version
-Print version and exit.
-.TP
-.BR \-\-
-Options processing terminator.
-.SH EXIT STATUS
-The about utility exits 0 on success, and >0 if an error occurs.
-.SH SEE ALSO
-uname(1), sysctl(8)
-.PP
-https://docs.python.org/3/library/index.html
-.SH STANDARDS
-The about command is not a standard UNIX/POSIX command.
-.PP
-It tries to follow the PEP 8 style guide for Python code (see https://www.python.org/dev/peps/pep-0008/).
-We check this with the Pylint command (see https://www.pylint.org/).
-.SH PORTABILITY
+.Pp
+.Op Fl -debug
+Enable debug mode
+.Pp
+.Op Fl -help|-?
+Print usage and this help message and exit
+.Pp
+.Op Fl -version
+Print version and exit
+.Pp
+.Op Fl -
+Options processing terminator
+.Sh EXIT STATUS
+.Ex -std about
+.Sh SEE ALSO
+.Xr uname 1 ,
+.Xr sysctl 8 ,
+.Pp
+.Lk https://docs.python.org/3/library/index.html [The Python Standard Library]
+.Sh STANDARDS
+The
+.Nm
+utility is not a standard UNIX command.
+.Pp
+It tries to follow the PEP 8 style guide for Python code.
+.Sh PORTABILITY
 Tested OK under Windows.
-.SH HISTORY
-The about command was created as an example for the PNU project, testing many of the standard Python functions for getting system information.
-.SH LICENSE
-This utility is available under the 3-clause BSD license (see https://opensource.org/licenses/BSD-3-Clause).
-.SH AUTHOR
-Hubert Tournier
+.Sh HISTORY
+The
+.Nm
+command was created as an example for the
+.Lk https://github.com/HubTou/PNU [PNU project] ,
+testing many of the standard Python functions for getting system information.
+.Sh LICENSE
+It is available under the 3-clause BSD license.
+.Sh AUTHORS
+.An Hubert Tournier

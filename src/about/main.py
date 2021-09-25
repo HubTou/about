@@ -19,7 +19,7 @@ import sysconfig
 import unicodedata
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - show system information v1.1.0 (July 3, 2021) by Hubert Tournier $"
+ID = "@(#) $Id: about - show system information v1.1.2 (September 25, 2021) by Hubert Tournier $"
 
 # Unix dependencies:
 try:
@@ -44,6 +44,15 @@ parameters = {
     "System": False,
     "User": False,
 }
+
+
+################################################################################
+def initialize_debugging(program_name):
+    """Debugging set up"""
+    console_log_format = program_name + ": %(levelname)s: %(message)s"
+    logging.basicConfig(format=console_log_format, level=logging.DEBUG)
+    logging.disable(logging.INFO)
+
 
 ################################################################################
 def display_help():
@@ -577,6 +586,7 @@ def about_python():
         print()
 
         print("[Python/Config]")
+        print("sys.base_prefix={}".format(sys.base_prefix))
         print("sys.executable={}".format(sys.executable))
         print("sys.flags={}".format(sys.flags))
         printm("sys.builtin_module_names", sys.builtin_module_names)
@@ -612,10 +622,8 @@ def about_python():
 def main():
     """Program's entry point"""
     program_name = os.path.basename(sys.argv[0])
-    console_log_format = program_name + ": %(levelname)s: %(message)s"
-    logging.basicConfig(format=console_log_format, level=logging.DEBUG)
-    logging.disable(logging.INFO)
 
+    initialize_debugging(program_name)
     process_command_line()
 
     if True not in parameters.values():
