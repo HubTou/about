@@ -1,10 +1,17 @@
 # Installation
+Once you have installed [Python](https://www.python.org/downloads/) and its packages manager [pip](https://pip.pypa.io/en/stable/installation/),
+depending on if you want only this tool, the full set of PNU tools, or PNU plus a selection of additional third-parties tools, use one of these commands:
+
 pip install [pnu-about](https://pypi.org/project/pnu-about/)
+<br>
+pip install [PNU](https://pypi.org/project/PNU/)
+<br>
+pip install [pytnix](https://pypi.org/project/pytnix/)
 
 # ABOUT(1)
 
 ## NAME
-about - show system information
+about - Show system information
 
 ## SYNOPSIS
 **about**

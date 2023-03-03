@@ -21,7 +21,7 @@ import unicodedata
 import libpnu
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - Show system information v1.1.3 (March 3, 2023) by Hubert Tournier $"
+ID = "@(#) $Id: about - Show system information v1.1.4 (March 3, 2023) by Hubert Tournier $"
 
 # Unix dependencies:
 try:
@@ -505,9 +505,9 @@ def about_environment():
             print(f"locale.getlocale(locale.RADIXCHAR)={locale.nl_langinfo(locale.RADIXCHAR)}")
             print(f"locale.getlocale(locale.THOUSEP)={locale.nl_langinfo(locale.THOUSEP)}")
             print(f"locale.getlocale(locale.ALT_DIGITS)={locale.nl_langinfo(locale.ALT_DIGITS)}")
-            print()
         except:
             pass
+        print()
 
 
 ####################################################################################################
