@@ -21,7 +21,7 @@ import unicodedata
 import libpnu
 
 # Version string used by the what(1) and ident(1) commands:
-ID = "@(#) $Id: about - Show system information v1.1.4 (March 3, 2023) by Hubert Tournier $"
+ID = "@(#) $Id: about - Show system information v1.1.5 (March 3, 2023) by Hubert Tournier $"
 
 # Unix dependencies:
 try:
@@ -537,7 +537,7 @@ def about_python():
         print(f"sys.flags={sys.flags}")
         printm("sys.builtin_module_names", sys.builtin_module_names)
         printm("sys.modules", sys.modules)
-        print(f"fsys.path={sys.path}")
+        print(f"sys.path={sys.path}")
         python_version = platform.python_version_tuple()
         if python_version[0] == 3 and python_version[1] >= 9:
             printm("sys.platlibdir", sys.platlibdir)  # Python 3.9+
